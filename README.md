@@ -11,7 +11,8 @@ Therefore, you can request through the resource + the endpoint.
     * DELETE https://btbuyftb2l.execute-api.ap-southeast-2.amazonaws.com/dev/user/newUser
 * List of magazines:
     * PATCH https://btbuyftb2l.execute-api.ap-southeast-2.amazonaws.com/dev/user
- Request body:
+
+Request body:
 
     [
         {
