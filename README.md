@@ -10,13 +10,13 @@ Therefore, you can request through the resource + the endpoint.
  
 Request body:
 
-    [
+    
         {
           "key": "newworld",
           "schedule":"Mo-Fr 01:00-22:00",
           "frequency": 1
         }
-    ]
+    
 * Delete user example:
     * DELETE https://btbuyftb2l.execute-api.ap-southeast-2.amazonaws.com/dev/user/newUser
 * Update user example:
@@ -24,13 +24,13 @@ Request body:
 
 Request body:
 
-    [
+    
         {
           "key": "newworld",
           "schedule":"Mo-Fr 01:00-22:00",
           "frequency": 1
         }
-    ]
+    
 * Login user example:
     * POST https://btbuyftb2l.execute-api.ap-southeast-2.amazonaws.com/dev/user/login?username=nqt123&password=123456
 * Logout user example:
