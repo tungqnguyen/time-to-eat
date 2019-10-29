@@ -4,12 +4,17 @@ const jwt = require('jsonwebtoken');
 const moment = require('moment');
 const OpeningHours = require('opening_hours');
 const AWS = require('aws-sdk');
+const cors = require('cors')
 const s3 = new AWS.S3({
-    accessKeyId: "AKIARXSD6EGQ7RL7YD4J",
-    secretAccessKey: "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"
+    accessKeyId: "AKIAITXP3VGJBJ7U2H4Q",
+    secretAccessKey: "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"
 }); 
 const app = express();
 app.use(express.json());
+//enable all cors requests
+//disable this if running locally
+app.use(cors())
+
 
 const readFile = async (req, res, next) => {
   try {
@@ -20,7 +25,8 @@ const readFile = async (req, res, next) => {
       res.locals.content = JSON.parse(data.Body.toString());
       next();
   } catch (error) {
-      res.sendStatus(500);
+      console.log(error);
+      // res.sendStatus(500);
   }
 };
 
@@ -64,9 +70,9 @@ const generateToken = username => jwt.sign({ id: username }, 'thisisasecretstrin
 
 app.post('/user/register', readFile, async(req, res) => {
   try {
-    const { username, password } = req.query
+    const { username, password } = req.body
     const db = res.locals.content;
-    if (db.admins.some(admin => admin.username === username )) res.status(400).send('username already exists')
+    if (db.admins.some(admin => admin.username === username )) {res.status(400).send('username already exists')}
     else db.admins.push({ username, password });
     
     const stringDb = JSON.stringify(db);
@@ -77,7 +83,7 @@ app.post('/user/register', readFile, async(req, res) => {
         Body: stringDb,
         ContentType: "application/json"
     }).promise()
-    res.send(200);
+    res.sendStatus(200);
   } catch (error) {
     console.log(error);
   }
@@ -86,11 +92,13 @@ app.post('/user/register', readFile, async(req, res) => {
 // method for login
 app.post('/user/login', readFile, async (req, res) => {
   try {
+    console.log('bod', req.body);
+    if (req.body.username === undefined || req.body.password === undefined) throw new Error();
     let found = false;
     const db = res.locals.content;
     const { admins } = db;
     admins.map(admin => {
-      if (admin.username === req.query.username && admin.password === req.query.password) {
+      if (admin.username === req.body.username && admin.password === req.body.password) {
         found = true;
       }
     })
@@ -260,10 +268,10 @@ app.get('/user/clearCache', readFile, auth, async (req, res) => {
 
 // trigger refresh all users
 app.get('/user/trigger', readFile, auth, async (req, res) => {
-  try {
-    const db = res.locals.content;
-    const now = moment();
-    const userArr = db.users.map((user) => {
+try {
+  const db = res.locals.content;
+  const now = moment();
+  const userArr = db.users.map((user) => {
       const schedule = new OpeningHours(user.schedule);
       const isOpen = schedule.getState();
       const diff = now.diff(user.lastExecution);

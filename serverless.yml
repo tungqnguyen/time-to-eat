@@ -64,6 +64,7 @@ functions:
           - http:
               path: /{proxy+}
               method: any
+              cors: true
 #    events:
 #      - http:
 #          path: users/create
